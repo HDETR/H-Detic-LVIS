@@ -1,0 +1,13 @@
+_BASE_: "BoxSup-H-DeformDETR_L_R50_2x_t900_group5.yaml"
+FIND_UNUSED_PARAM: False
+SOLVER:
+  IMS_PER_BATCH: 32
+MODEL:
+  DETR:
+    USE_CHECKPOINT: True
+  SWIN:
+      SIZE: B-22k
+      OUT_FEATURES: [1, 2, 3]
+      USE_CHECKPOINT: True
+
+

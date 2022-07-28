@@ -13,7 +13,4 @@ from .data.datasets import objects365
 from .data.datasets import oid
 from .data.datasets import coco_zeroshot
 
-try:
-    from .modeling.meta_arch import d2_deformable_detr
-except:
-    pass
+from .modeling.meta_arch import d2_deformable_detr

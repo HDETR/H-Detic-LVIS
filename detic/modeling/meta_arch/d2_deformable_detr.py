@@ -17,7 +17,7 @@ from models.deformable_transformer import DeformableTransformer
 from models.segmentation import sigmoid_focal_loss
 from util.box_ops import box_cxcywh_to_xyxy, box_xyxy_to_cxcywh
 from util.misc import NestedTensor, accuracy
-
+import copy
 
 __all__ = ["DeformableDetr"]
 
@@ -111,8 +111,10 @@ class DeformableDetr(nn.Module):
         self.test_topk = cfg.TEST.DETECTIONS_PER_IMAGE
         self.num_classes = cfg.MODEL.DETR.NUM_CLASSES
         self.mask_on = cfg.MODEL.MASK_ON
+        self.k_one2many = cfg.MODEL.DETR.NUM_OBJECT_QUERIES_ONE2MANY
         hidden_dim = cfg.MODEL.DETR.HIDDEN_DIM
-        num_queries = cfg.MODEL.DETR.NUM_OBJECT_QUERIES
+        num_queries_one2one = cfg.MODEL.DETR.NUM_OBJECT_QUERIES_ONE2ONE
+        num_queries_one2many = cfg.MODEL.DETR.NUM_OBJECT_QUERIES_ONE2MANY
 
         # Transformer parameters:
         nheads = cfg.MODEL.DETR.NHEADS
@@ -123,6 +125,9 @@ class DeformableDetr(nn.Module):
         num_feature_levels = cfg.MODEL.DETR.NUM_FEATURE_LEVELS
         two_stage = cfg.MODEL.DETR.TWO_STAGE
         with_box_refine = cfg.MODEL.DETR.WITH_BOX_REFINE
+        mixed_selection = cfg.MODEL.DETR.MIXED_SELECTION
+        look_forward_twice = cfg.MODEL.DETR.LOOK_FORWARD_TWICE
+        use_checkpoint = cfg.MODEL.DETR.USE_CHECKPOINT
 
         # Loss parameters:
         giou_weight = cfg.MODEL.DETR.GIOU_WEIGHT
@@ -148,15 +153,20 @@ class DeformableDetr(nn.Module):
             dec_n_points=4,
             enc_n_points=4,
             two_stage=two_stage,
-            two_stage_num_proposals=num_queries)
+            two_stage_num_proposals=num_queries_one2one + num_queries_one2many,
+            look_forward_twice=look_forward_twice,
+            mixed_selection=mixed_selection,
+            use_checkpoint=False,)
 
         self.detr = DeformableDETR(
             backbone, transformer, num_classes=self.num_classes, 
-            num_queries=num_queries,
             num_feature_levels=num_feature_levels,
             aux_loss=deep_supervision,
             with_box_refine=with_box_refine,
             two_stage=two_stage,
+            num_queries_one2one=num_queries_one2one,
+            num_queries_one2many=num_queries_one2many,
+            mixed_selection=mixed_selection,
         )
 
         if self.mask_on:
@@ -171,7 +181,15 @@ class DeformableDetr(nn.Module):
             for i in range(dec_layers - 1):
                 aux_weight_dict.update({k + f"_{i}": v for k, v in weight_dict.items()})
             weight_dict.update(aux_weight_dict)
+        
+        new_dict = dict()
+        for key, value in weight_dict.items():
+            new_dict[key] = value
+            new_dict[key + "_one2many"] = value
+        weight_dict = new_dict
         print('weight_dict', weight_dict)
+        
+        
         losses = ["labels", "boxes", "cardinality"]
         if self.mask_on:
             losses += ["masks"]
@@ -185,6 +203,31 @@ class DeformableDetr(nn.Module):
         pixel_std = torch.Tensor(cfg.MODEL.PIXEL_STD).to(self.device).view(3, 1, 1)
         self.normalizer = lambda x: (x - pixel_mean) / pixel_std
 
+    
+    def get_hybrid_loss(self, output, targets):
+        # one-to-one-loss
+        loss_dict = self.criterion(output, targets)
+
+        multi_targets = copy.deepcopy(targets)
+        # repeat the targets
+        for target in multi_targets:
+            target["boxes"] = target["boxes"].repeat(self.k_one2many, 1)
+            target["labels"] = target["labels"].repeat(self.k_one2many)
+
+        output_one2many = dict()
+        output_one2many["pred_logits"] = output["pred_logits_one2many"]
+        output_one2many["pred_boxes"] = output["pred_boxes_one2many"]
+        output_one2many["aux_outputs"] = output["aux_outputs_one2many"]
+
+        # one-to-many loss
+        loss_dict_one2many = self.criterion(output_one2many, multi_targets)
+        for key, value in loss_dict_one2many.items():
+            if key + "_one2many" in loss_dict.keys():
+                loss_dict[key + "_one2many"] += value
+            else:
+                loss_dict[key + "_one2many"] = value
+
+        return loss_dict
 
     def forward(self, batched_inputs):
         """
@@ -196,10 +239,15 @@ class DeformableDetr(nn.Module):
         images = self.preprocess_image(batched_inputs)
         output = self.detr(images)
         if self.training:
+            
             gt_instances = [x["instances"].to(self.device) for x in batched_inputs]
             targets = self.prepare_targets(gt_instances)
-            loss_dict = self.criterion(output, targets)
+            if self.k_one2many > 0:
+                loss_dict = self.get_hybrid_loss(output, targets)
+            else:
+                loss_dict = self.criterion(output, targets)
             weight_dict = self.criterion.weight_dict
+
             for k in loss_dict.keys():
                 if k in weight_dict:
                     loss_dict[k] *= weight_dict[k]
