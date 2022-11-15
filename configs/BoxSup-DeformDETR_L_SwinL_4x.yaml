@@ -8,3 +8,7 @@ MODEL:
     SIZE: L-22k
     OUT_FEATURES: [1, 2, 3]
     USE_CHECKPOINT: True
+  DETR:
+    MIXED_SELECTION: True
+    LOOK_FORWARD_TWICE: True
+    DROPOUT: 0.0

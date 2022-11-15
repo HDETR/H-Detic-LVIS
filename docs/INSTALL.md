@@ -20,12 +20,12 @@ cd detectron2
 pip install -e .
 
 cd ..
-git clone https://github.com/facebookresearch/Detic.git --recurse-submodules
-cd Detic
+git clone https://github.com/HDETR/H-Detic-LVIS.git 
+cd H-Detic-LVIS
 pip install -r requirements.txt
 ```
 
-Our project uses two submodules, [CenterNet2](https://github.com/xingyizhou/CenterNet2.git) and [Deformable-DETR](https://github.com/fundamentalvision/Deformable-DETR.git). If you forget to add `--recurse-submodules`, do `git submodule init` and then `git submodule update`. To train models with Deformable-DETR (optional), we need to compile it
+**H-Deformable-Detr** is already included in the repo under [Deformable-DETR](./third_party/Deformable-DETR). To train models with Deformable-DETR (optional), we need to compile it
 
 ```
 cd third_party/Deformable-DETR/models/ops

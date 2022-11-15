@@ -1,116 +1,118 @@
-# Detecting Twenty-thousand Classes using Image-level Supervision
+# H-Detic-LVIS
 
-**Detic**: A **Det**ector with **i**mage **c**lasses that can use image-level labels to easily train detectors.
+This is the official implementation of the paper "[DETRs with Hybrid Matching](https://arxiv.org/abs/2207.13080)". 
 
-<p align="center"> <img src='docs/teaser.jpeg' align="center" height="300px"> </p>
+Authors: Ding Jia, Yuhui Yuan, Haodi He, Xiaopei Wu, Haojun Yu, Weihong Lin, Lei Sun, Chao Zhang, Han Hu
 
-> [**Detecting Twenty-thousand Classes using Image-level Supervision**](http://arxiv.org/abs/2201.02605),               
-> Xingyi Zhou, Rohit Girdhar, Armand Joulin, Philipp Kr&auml;henb&uuml;hl, Ishan Misra,                 
-> *arXiv technical report ([arXiv 2201.02605](http://arxiv.org/abs/2201.02605))*         
+## Model ZOO
 
+We provide a set of baseline results and trained models available for download:
 
-## Features
-
-- Detects **any** class given class names (using [CLIP](https://github.com/openai/CLIP)).
-
-- We train the detector on ImageNet-21K dataset with 21K classes.
-
-- Cross-dataset generalization to OpenImages and Objects365 **without finetuning**. 
-
-- State-of-the-art results on Open-vocabulary LVIS and Open-vocabulary COCO.
-
-- Works for DETR-style detectors.
-
+### Models with the ResNet-50 backbone
+<table><tbody>
+<!-- START TABLE -->
+<!-- TABLE HEADER -->
+<th valign="bottom">Name</th>
+<th valign="bottom">Backbone</th>
+<th valign="bottom">query</th>
+<th valign="bottom">epochs</th>
+<th valign="bottom">AP</th>
+<th valign="bottom">download</th>
+<!-- TABLE BODY -->
+ <tr><td align="left"><a href="configs/BoxSup-DeformDETR_L_R50_2x.yaml">Deformable-DETR + tricks</a></td>
+<td align="center">R50</td>
+<td align="center">300</td>
+<td align="center">24</td>
+<td align="center">32.2</td>
+<td align="center"><a href="">model</a></td>
+ <tr><td align="left"><a href="configs/BoxSup-DeformDETR_L_SwinB_4x.yaml">Deformable-DETR + tricks</a></td>
+<td align="center">SwinB</td>
+<td align="center">300</td>
+<td align="center">48</td>
+<td align="center">44.6</td>
+<td align="center"><a href="">model</a></td>
+</tr>
+</tr>
+ <tr><td align="left"><a href="configs/BoxSup-DeformDETR_L_SwinL_4x.yaml">Deformable-DETR + tricks</a></td>
+<td align="center">R50</td>
+<td align="center">300</td>
+<td align="center">48</td>
+<td align="center">47.0</td>
+<td align="center"><a href="">model</a></td>
+</tr>
+</tr>
+ <tr><td align="left"><a href="configs/BoxSup-H-DeformDETR_L_R50_2x_t900_group5.yaml">H-Deformable-DETR + tricks</a></td>
+<td align="center">R50</td>
+<td align="center">300</td>
+<td align="center">24</td>
+<td align="center">33.5</td>
+<td align="center"><a href="">model</a></td>
+</tr>
+</tr>
+ <tr><td align="left"><a href="configs/BoxSup-H-DeformDETR_L_SwinB_4x_t900_group5.yaml">H-Deformable-DETR + tricks</a></td>
+<td align="center">R50</td>
+<td align="center">300</td>
+<td align="center">48</td>
+<td align="center">46.0</td>
+<td align="center"><a href="">model</a></td>
+</tr>
+</tr>
+ <tr><td align="left"><a href="configs/BoxSup-H-DeformDETR_L_SwinL_4x_t900_group5.yaml">H-Deformable-DETR + tricks</a></td>
+<td align="center">R50</td>
+<td align="center">300</td>
+<td align="center">48</td>
+<td align="center">47.9</td>
+<td align="center"><a href="">model</a></td>
+</tr>
+</tbody></table>
 
 ## Installation
+See [install instructions](./docs/INSTALL.md).
 
-See [installation instructions](docs/INSTALL.md).
+## Data
+See [prepare datasets](./datasets/README.md).
 
-## Demo
+## Run
+### To train a model using 8 cards
 
-**Update April 2022**: we released more real-time models [here](docs/MODEL_ZOO.md#real-time-models).
+```Bash
+DETECTRON2_DATASETS=<datasets_path> python train_net.py --num-gpus 8 --resume --config-file <config_file> --eval-only
+```
 
-Replicate web demo and docker image: [![Replicate](https://replicate.com/facebookresearch/detic/badge)](https://replicate.com/facebookresearch/detic)
+To train/eval a model with the swin transformer backbone, you need to download the backbone from the [offical repo](https://github.com/microsoft/Swin-Transformer#main-results-on-imagenet-with-pretrained-models) frist and specify argument`--pretrained_backbone_path` like [our configs](./configs/two_stage/deformable-detr-hybrid-branch/36eps/swin).
 
+### To eval a model using 8 cards
 
-Integrated into [Huggingface Spaces 🤗](https://huggingface.co/spaces) using [Gradio](https://github.com/gradio-app/gradio). Try out the web demo: [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/akhaliq/Detic)
+```Bash
+DETECTRON2_DATASETS=<datasets_path> python train_net.py --num-gpus 8 --resume --config-file <config_file> --eval-only MODEL.WEIGHTS /path/to/weight.pth
+```
 
-Run our demo using Colab (no GPU needed): [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1QtTW9-ukX2HKZGvt0QvVGqjuqEykoZKI)
+## Modified files 
 
-We use the default detectron2 [demo interface](https://github.com/facebookresearch/detectron2/blob/main/GETTING_STARTED.md). 
-For example, to run our [21K model](docs/MODEL_ZOO.md#cross-dataset-evaluation) on a [messy desk image](https://web.eecs.umich.edu/~fouhey/fun/desk/desk.jpg) (image credit [David Fouhey](https://web.eecs.umich.edu/~fouhey)) with the lvis vocabulary, run
+We modified `detic/modeling/meta_arch/d2_deformable_detr.py` to support one-to-many matching loss.
 
-~~~
-mkdir models
-wget https://dl.fbaipublicfiles.com/detic/Detic_LCOCOI21k_CLIP_SwinB_896b32_4x_ft4x_max-size.pth -O models/Detic_LCOCOI21k_CLIP_SwinB_896b32_4x_ft4x_max-size.pth
-wget https://web.eecs.umich.edu/~fouhey/fun/desk/desk.jpg
-python demo.py --config-file configs/Detic_LCOCOI21k_CLIP_SwinB_896b32_4x_ft4x_max-size.yaml --input desk.jpg --output out.jpg --vocabulary lvis --opts MODEL.WEIGHTS models/Detic_LCOCOI21k_CLIP_SwinB_896b32_4x_ft4x_max-size.pth
-~~~
-
-If setup correctly, the output should look like:
-
-<p align="center"> <img src='docs/example_output_lvis.jpeg' align="center" height="450px"> </p>
-
-The same model can run with other vocabularies (COCO, OpenImages, or Objects365), or a **custom vocabulary**. For example:
-
-~~~
-python demo.py --config-file configs/Detic_LCOCOI21k_CLIP_SwinB_896b32_4x_ft4x_max-size.yaml --input desk.jpg --output out2.jpg --vocabulary custom --custom_vocabulary headphone,webcam,paper,coffe --confidence-threshold 0.3 --opts MODEL.WEIGHTS models/Detic_LCOCOI21k_CLIP_SwinB_896b32_4x_ft4x_max-size.pth
-~~~
-
-The output should look like:
-
-<p align="center"> <img src='docs/example_output_custom.jpeg' align="center" height="450px"> </p>
-
-Note that `headphone`, `paper` and `coffe` (typo intended) are **not** LVIS classes. Despite the misspelled class name, our detector can produce a reasonable detection for `coffe`.
-
-## Benchmark evaluation and training
-
-Please first [prepare datasets](datasets/README.md), then check our   [MODEL ZOO](docs/MODEL_ZOO.md) to reproduce results in our paper. We highlight key results below:
-
-- Open-vocabulary LVIS
-
-    |                       |  mask mAP | mask mAP_novel  |
-    |-----------------------|-----------|-----------------|
-    |Box-Supervised         | 30.2      |       16.4      |
-    |Detic                  | 32.4      |       24.9      |
-
-- Standard LVIS
-
-    |                       | Detector/ Backbone |  mask mAP | mask mAP_rare  |
-    |-----------------------|----------|-----------|-----------------|
-    |Box-Supervised         | CenterNet2-ResNet50 | 31.5      |       25.6      |
-    |Detic                  | CenterNet2-ResNet50 | 33.2      |       29.7      |
-    |Box-Supervised         | CenterNet2-SwinB    | 40.7      |       35.9      |
-    |Detic                  | CenterNet2-SwinB    | 41.7      |       41.7      |
-
-    |                       | Detector/ Backbone |  box mAP | box mAP_rare  |
-    |-----------------------|----------|-----------|-----------------|
-    |Box-Supervised         | DeformableDETR-ResNet50 | 31.7      |       21.4      |
-    |Detic                  | DeformableDETR-ResNet50 | 32.5      |       26.2      |
-
-- Cross-dataset generalization
-
-    |                       | Backbone |  Objects365 box mAP | OpenImages box mAP50  |
-    |-----------------------|----------|-----------|-----------------|
-    |Box-Supervised         | SwinB    | 19.1      |       46.2      |
-    |Detic                  | SwinB    | 21.4      |       55.2      |
+Other modifications are under `third_party/Deformable-DETR`, for more information, please see [here](https://github.com/HDETR/H-Deformable-DETR#modified-files-compared-to-vanilla-deformable-detr).
 
 
-## License
+## Citing H-Detic-LVIS
+If you find H-Detic-LVIS useful in your research, please consider citing:
 
-The majority of Detic is licensed under the [Apache 2.0 license](LICENSE), however portions of the project are available under separate license terms: SWIN-Transformer, CLIP, and TensorFlow Object Detection API are licensed under the MIT license; UniDet is licensed under the Apache 2.0 license; and the LVIS API is licensed under a [custom license](https://github.com/lvis-dataset/lvis-api/blob/master/LICENSE). If you later add other third party code, please keep this license info updated, and please let us know if that component is licensed under something other than CC-BY-NC, MIT, or CC0
+```bibtex
+@article{jia2022detrs,
+  title={DETRs with Hybrid Matching},
+  author={Jia, Ding and Yuan, Yuhui and He, Haodi and Wu, Xiaopei and Yu, Haojun and Lin, Weihong and Sun, Lei and Zhang, Chao and Hu, Han},
+  journal={arXiv preprint arXiv:2207.13080},
+  year={2022}
+}
 
-## Ethical Considerations
-Detic's wide range of detection capabilities may introduce similar challenges to many other visual recognition and open-set recognition methods.
-As the user can define arbitrary detection classes, class design and semantics may impact the model output.
+@inproceedings{zhou2021detecting,
+  title={Detecting Twenty-thousand Classes using Image-level Supervision},
+  author={Zhou, Xingyi and Girdhar, Rohit and Joulin, Armand and Kr{\"a}henb{\"u}hl, Philipp and Misra, Ishan},
+  booktitle={arXiv preprint arXiv:2201.02605},
+  year={2021}
+}
+```
 
-## Citation
+## Acknowledgement 
 
-If you find this project useful for your research, please use the following BibTeX entry.
-
-    @inproceedings{zhou2021detecting,
-      title={Detecting Twenty-thousand Classes using Image-level Supervision},
-      author={Zhou, Xingyi and Girdhar, Rohit and Joulin, Armand and Kr{\"a}henb{\"u}hl, Philipp and Misra, Ishan},
-      booktitle={arXiv preprint arXiv:2201.02605},
-      year={2021}
-    }
+This repo is modified based on [Detic](https://github.com/facebookresearch/Detic).
