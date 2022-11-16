@@ -34,7 +34,7 @@ We provide a set of baseline results and trained models available for download:
 </tr>
 </tr>
  <tr><td align="left"><a href="configs/BoxSup-DeformDETR_L_SwinL_4x.yaml">Deformable-DETR + tricks</a></td>
-<td align="center">R50</td>
+<td align="center">SwinL</td>
 <td align="center">300</td>
 <td align="center">48</td>
 <td align="center">47.0</td>
@@ -50,7 +50,7 @@ We provide a set of baseline results and trained models available for download:
 </tr>
 </tr>
  <tr><td align="left"><a href="configs/BoxSup-H-DeformDETR_L_SwinB_4x_t900_group5.yaml">H-Deformable-DETR + tricks</a></td>
-<td align="center">R50</td>
+<td align="center">SwinB</td>
 <td align="center">300</td>
 <td align="center">48</td>
 <td align="center">46.0</td>
@@ -58,7 +58,7 @@ We provide a set of baseline results and trained models available for download:
 </tr>
 </tr>
  <tr><td align="left"><a href="configs/BoxSup-H-DeformDETR_L_SwinL_4x_t900_group5.yaml">H-Deformable-DETR + tricks</a></td>
-<td align="center">R50</td>
+<td align="center">SwinL</td>
 <td align="center">300</td>
 <td align="center">48</td>
 <td align="center">47.9</td>
