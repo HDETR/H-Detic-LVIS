@@ -3,6 +3,9 @@ FIND_UNUSED_PARAM: False
 SOLVER:
   IMS_PER_BATCH: 32
 MODEL:
+  WEIGHTS: "models/swin_large_patch4_window7_224_22k.pkl"
+  BACKBONE:
+    NAME: build_swintransformer_backbone
   DETR:
     USE_CHECKPOINT: True
   SWIN:
