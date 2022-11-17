@@ -24,13 +24,13 @@ We provide a set of baseline results and trained models available for download:
 <td align="center">300</td>
 <td align="center">24</td>
 <td align="center">32.2</td>
-<td align="center"><a href="">model</a></td>
+<td align="center"><a href="https://github.com/HDETR/H-Detic-LVIS/releases/download/v0.1/DeformableDetr_R50.pth">model</a></td>
  <tr><td align="left"><a href="configs/BoxSup-DeformDETR_L_SwinB_4x.yaml">Deformable-DETR + tricks</a></td>
 <td align="center">SwinB</td>
 <td align="center">300</td>
 <td align="center">48</td>
 <td align="center">44.6</td>
-<td align="center"><a href="">model</a></td>
+<td align="center"><a href="https://github.com/HDETR/H-Detic-LVIS/releases/download/v0.1/DeformableDetr_SwinB.pth">model</a></td>
 </tr>
 </tr>
  <tr><td align="left"><a href="configs/BoxSup-DeformDETR_L_SwinL_4x.yaml">Deformable-DETR + tricks</a></td>
@@ -38,7 +38,7 @@ We provide a set of baseline results and trained models available for download:
 <td align="center">300</td>
 <td align="center">48</td>
 <td align="center">47.0</td>
-<td align="center"><a href="">model</a></td>
+<td align="center"><a href="https://github.com/HDETR/H-Detic-LVIS/releases/download/v0.1/DeformableDetr_SwinL.pth">model</a></td>
 </tr>
 </tr>
  <tr><td align="left"><a href="configs/BoxSup-H-DeformDETR_L_R50_2x_t900_group5.yaml">H-Deformable-DETR + tricks</a></td>
@@ -46,7 +46,7 @@ We provide a set of baseline results and trained models available for download:
 <td align="center">300</td>
 <td align="center">24</td>
 <td align="center">33.5</td>
-<td align="center"><a href="">model</a></td>
+<td align="center"><a href="https://github.com/HDETR/H-Detic-LVIS/releases/download/v0.1/H-DeformableDetr_R50.pth">model</a></td>
 </tr>
 </tr>
  <tr><td align="left"><a href="configs/BoxSup-H-DeformDETR_L_SwinB_4x_t900_group5.yaml">H-Deformable-DETR + tricks</a></td>
@@ -54,7 +54,7 @@ We provide a set of baseline results and trained models available for download:
 <td align="center">300</td>
 <td align="center">48</td>
 <td align="center">46.0</td>
-<td align="center"><a href="">model</a></td>
+<td align="center"><a href="https://github.com/HDETR/H-Detic-LVIS/releases/download/v0.1/H-DeformableDetr_SwinB.pth">model</a></td>
 </tr>
 </tr>
  <tr><td align="left"><a href="configs/BoxSup-H-DeformDETR_L_SwinL_4x_t900_group5.yaml">H-Deformable-DETR + tricks</a></td>
@@ -62,7 +62,7 @@ We provide a set of baseline results and trained models available for download:
 <td align="center">300</td>
 <td align="center">48</td>
 <td align="center">47.9</td>
-<td align="center"><a href="">model</a></td>
+<td align="center"><a href="https://github.com/HDETR/H-Detic-LVIS/releases/download/v0.1/H-DeformableDetr_SwinL.pth">model</a></td>
 </tr>
 </tbody></table>
 
