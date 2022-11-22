@@ -76,7 +76,7 @@ See [prepare datasets](./datasets/README.md).
 ### To train a model using 8 cards
 
 ```Bash
-DETECTRON2_DATASETS=<datasets_path> python train_net.py --num-gpus 8 --resume --config-file <config_file> --eval-only
+DETECTRON2_DATASETS=<datasets_path> python train_net.py --num-gpus 8 --config-file <config_file>
 ```
 
 To train/eval a model with the swin transformer backbone, you need to download the backbone from the [offical repo](https://github.com/microsoft/Swin-Transformer#main-results-on-imagenet-with-pretrained-models) frist and specify argument`--pretrained_backbone_path` like [our configs](./configs/two_stage/deformable-detr-hybrid-branch/36eps/swin).
